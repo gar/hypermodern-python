@@ -2,6 +2,7 @@ import locale
 import textwrap
 
 import click
+import requests
 
 from . import __version__, wikipedia
 
@@ -27,6 +28,6 @@ def main(lang):
         click.secho(title, fg="green")
         click.echo(textwrap.fill(extract))
 
-    except Exception as err:
-        click.secho(f"failed with error {err}", fg="red")
-        exit(1)
+    except requests.RequestException as error:
+        message = str(error)
+        raise click.ClickException(message)

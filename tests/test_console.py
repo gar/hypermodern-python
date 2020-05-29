@@ -27,12 +27,6 @@ def en_locale_mock(mocker):
     return mock
 
 
-@pytest.fixture
-def mock_requests_get_fail(mocker):
-    mock = mocker.patch("requests.get")
-    mock.side_effect = requests.exceptions.HTTPError("404 Not Found")
-
-
 def test_main_succeeds(runner, mock_requests_get):
     result = runner.invoke(console.main)
     assert result.exit_code == 0
@@ -55,6 +49,8 @@ def test_lang_can_be_overridden(runner, mock_requests_get, en_locale_mock):
     assert "es.wikipedia.org" in args[0]
 
 
-def test_main_fails_when_http_error(runner, mock_requests_get_fail):
+def test_main_fails_when_http_error(runner, mock_requests_get):
+    mock_requests_get.side_effect = requests.RequestException
     result = runner.invoke(console.main)
+    assert "Error" in result.output
     assert result.exit_code == 1
