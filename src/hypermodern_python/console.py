@@ -1,3 +1,4 @@
+import locale
 import textwrap
 
 import click
@@ -5,19 +6,33 @@ import requests
 
 from . import __version__
 
-API_URL = "https://en.wikipedia.org/api/rest_v1/page/random/summary"
+LOCALE_LANG = locale.getlocale()[0].split("_")[0]
 
 
 @click.command()
 @click.version_option(version=__version__)
-def main():
+@click.option(
+    "--lang",
+    default=LOCALE_LANG,
+    help="Use Wikipedia edition for a given language code",
+)
+def main(lang):
     """The hypermodern Python project."""
-    with requests.get(API_URL) as response:
-        response.raise_for_status()
-        data = response.json()
 
-    title = data["title"]
-    extract = data["extract"]
+    api_url = f"https://{lang}.wikipedia.org/api/rest_v1/page/random/summary"
+    headers = {"User-Agent": "https://github.com/gar"}
 
-    click.secho(title, fg="green")
-    click.echo(textwrap.fill(extract))
+    try:
+        with requests.get(api_url, headers=headers) as response:
+            response.raise_for_status()
+            data = response.json()
+
+        title = data["title"]
+        extract = data["extract"]
+
+        click.secho(title, fg="green")
+        click.echo(textwrap.fill(extract))
+
+    except Exception as err:
+        click.secho(f"failed with error {err}", fg="red")
+        exit(1)
