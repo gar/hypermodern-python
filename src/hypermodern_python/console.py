@@ -12,22 +12,20 @@ LOCALE_LANG = locale.getlocale()[0].split("_")[0]
 @click.command()
 @click.version_option(version=__version__)
 @click.option(
-    "--lang",
+    "--language",
+    "--l",
     default=LOCALE_LANG,
-    help="Use Wikipedia edition for a given language code",
+    help="Language edition of Wikipedia",
+    metavar="LANG",
+    show_default=True,
 )
-def main(lang):
+def main(language):
     """The hypermodern Python project."""
 
-    try:
-        data = wikipedia.random_page(lang)
+    data = wikipedia.random_page(language=language)
 
-        title = data["title"]
-        extract = data["extract"]
+    title = data["title"]
+    extract = data["extract"]
 
-        click.secho(title, fg="green")
-        click.echo(textwrap.fill(extract))
-
-    except requests.RequestException as error:
-        message = str(error)
-        raise click.ClickException(message)
+    click.secho(title, fg="green")
+    click.echo(textwrap.fill(extract))

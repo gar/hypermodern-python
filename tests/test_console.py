@@ -11,20 +11,15 @@ def runner():
 
 
 @pytest.fixture
-def mock_requests_get(mocker):
-    mock = mocker.patch("requests.get")
-    mock.return_value.__enter__.return_value.json.return_value = {
-        "title": "Lorem Ipsum",
-        "extract": "Lorem ipsum dolor sit amet",
-    }
+def mock_locale(mocker):
+    mock = mocker.patch("locale.getlocale")
+    mock.return_value = ("en_US",)
     return mock
 
 
 @pytest.fixture
-def en_locale_mock(mocker):
-    mock = mocker.patch("locale.getlocale")
-    mock.return_value = ("en_US",)
-    return mock
+def mock_wikipedia_random_page(mocker):
+    return mocker.patch("hypermodern_python.wikipedia.random_page")
 
 
 def test_main_succeeds(runner, mock_requests_get):
@@ -37,16 +32,14 @@ def test_title_is_in_result(runner, mock_requests_get):
     assert "Lorem Ipsum" in result.output
 
 
-def test_main_uses_locale_by_default(runner, mock_requests_get, en_locale_mock):
+def test_main_uses_locale_by_default(runner, mock_wikipedia_random_page, mock_locale):
     runner.invoke(console.main)
-    args, _ = mock_requests_get.call_args
-    assert "en.wikipedia.org" in args[0]
+    mock_wikipedia_random_page.assert_called_with(language="en")
 
 
-def test_lang_can_be_overridden(runner, mock_requests_get, en_locale_mock):
-    runner.invoke(console.main, ["--lang", "es"])
-    args, _ = mock_requests_get.call_args
-    assert "es.wikipedia.org" in args[0]
+def test_lang_can_be_overridden(runner, mock_wikipedia_random_page, mock_locale):
+    runner.invoke(console.main, ["--language=es"])
+    mock_wikipedia_random_page.assert_called_with(language="es")
 
 
 def test_main_fails_when_http_error(runner, mock_requests_get):

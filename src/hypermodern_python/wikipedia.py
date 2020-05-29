@@ -1,10 +1,17 @@
+import click
 import requests
 
+API_URL = "https://{language}.wikipedia.org/api/rest_v1/page/random/summary"
 
-def random_page(lang):
-    api_url = f"https://{lang}.wikipedia.org/api/rest_v1/page/random/summary"
+
+def random_page(language="en"):
+    url = API_URL.format(language=language)
     headers = {"User-Agent": "https://github.com/gar"}
 
-    with requests.get(api_url, headers=headers) as response:
-        response.raise_for_status()
-        return response.json()
+    try:
+        with requests.get(url, headers=headers) as response:
+            response.raise_for_status()
+            return response.json()
+    except requests.RequestException as error:
+        message = str(error)
+        raise click.ClickException(message)
