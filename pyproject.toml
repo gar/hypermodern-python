@@ -16,6 +16,8 @@ requests = "^2.23.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"
+coverage = {extras = ["toml"], version = "^5.1"}
+pytest-cov = "^2.9.0"
 
 [tool.poetry.scripts]
 hypermodern-python = "hypermodern_python.console:main"
@@ -23,3 +25,14 @@ hypermodern-python = "hypermodern_python.console:main"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["hypermodern_python"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
