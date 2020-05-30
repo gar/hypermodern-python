@@ -47,3 +47,9 @@ def test_main_fails_when_http_error(runner, mock_requests_get):
     result = runner.invoke(console.main)
     assert "Error" in result.output
     assert result.exit_code == 1
+
+
+@pytest.mark.e2e
+def test_main_succeeds_in_production_env(runner):
+    result = runner.invoke(console.main)
+    assert result.exit_code == 0
