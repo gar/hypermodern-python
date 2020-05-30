@@ -19,7 +19,7 @@ LOCALE_LANG = locale.getlocale()[0].split("_")[0]
     show_default=True,
 )
 def main(language):
-    """The hypermodern Python project."""
+    """Print out a random page from Wikipedia"""
 
     data = wikipedia.random_page(language=language)
 
